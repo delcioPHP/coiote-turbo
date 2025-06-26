@@ -22,27 +22,39 @@ class StartCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info('Starting Coiote Turbo...');
-
-        // Load the configuration
+        // Load the configuration (make sure the key is lowercase)
         $config = config('coioteTurbo');
 
         // Logic to check if it's already running (using the pid_file from config)
         if (file_exists($config['pid_file'])) {
             $pid = file_get_contents($config['pid_file']);
-            if (posix_kill((int)$pid, 0)) {
-                $this->warn("Coiote Turbo already seems to be running with PID: $pid");
+            if ($pid && posix_kill((int)$pid, 0)) {
+                $this->warn("Coiote Turbo already seems to be running with PID: $pid. Use 'coiote:stop' to stop it.");
                 return self::SUCCESS;
             }
-            // If the process does not exist, remove the old pid file
             unlink($config['pid_file']);
         }
 
-        // Instantiate and start the server
+        $this->info('Starting Coiote Turbo server...');
+
+        // If we are not running in daemon mode (i.e., foreground for development),
+        // override the log file path to send logs directly to the console's standard output.
+        if (empty($config['daemonize'])) {
+            $this->line(" <fg=yellow>Running in foreground mode. Tailing logs. Press Ctrl+C to stop.</>");
+            // This is a standard Unix stream that points to the console.
+            $config['log_file'] = '/dev/stdout';
+            $this->info(
+                "Coiote Turbo server started successfully. Listening at http://{$config['host']}:{$config['port']}"
+            );
+        }
+
+        // Instantiate and start the server.
+        // The SwooleServer class will now receive the correct log_file path.
         $server = new SwooleServer($this->laravel, $config);
+
+        // This call will either block (foreground) or exit after forking (daemon).
         $server->start();
 
-        $this->info("Coiote Turbo started at http://{$config['host']}:{$config['port']}");
         return self::SUCCESS;
     }
 }

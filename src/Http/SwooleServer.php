@@ -25,7 +25,11 @@ class SwooleServer
      */
     public function start(): void
     {
-        $server = new Server($this->config['host'], $this->config['port']);
+        $server = new Server(
+            $this->config['host'],
+            $this->config['port'],
+            SWOOLE_PROCESS
+        );
 
         $workerNum = $this->config['workers'] === 'auto'
             ? swoole_cpu_num() * 2
@@ -42,6 +46,7 @@ class SwooleServer
             'worker_num' => $workerNum,
             'daemonize' => $this->config['daemonize'],
             'log_file' => $logFile,
+            'backlog' => (int) $this->config['backlog'],
         ]);
 
         // Register server event listeners using arrow functions to preserve '$this' context.

@@ -1,0 +1,40 @@
+{
+    "name": "cabanga/coiote-turbo",
+    "description": "Coiote is a lightweight, fast, and practical web server and performance accelerator for Laravel applications. Built to be simple and functional, it brings native Swoole support to Laravel without the complexity.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "performance", "swoole", "turbo", "coiote"],
+    "autoload": {
+        "psr-4": {
+            "Cabanga\\CoioteTurbo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cabanga\\CoioteTurbo\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Délcio Cabanga"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^10.0 || ^11.0 || ^12.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cabanga\\CoioteTurbo\\CoioteTurboServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "swoole/ide-helper": "^6.0",
+        "orchestra/testbench": "^8.0 || ^9.0",
+        "phpunit/phpunit": "^10.5"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

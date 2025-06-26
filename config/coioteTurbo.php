@@ -18,7 +18,7 @@ return [
     'log_file' => storage_path('logs/coiote-turbo.log'),
 
     // File to store the PID of the main process
-    'pid_file' => storage_path('storage/app/coiote-turbo.pid'),
+    'pid_file' => storage_path('framework/coiote/coiote-turbo.pid'),
 
     'flush' => [
         // Core Laravel Services

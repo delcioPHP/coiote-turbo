@@ -28,14 +28,32 @@ class SwooleServer
             ? swoole_cpu_num() * 2
             : (int) $this->config['workers'];
 
+        $logFile = $this->config['log_file'];
+        $directory = dirname($logFile);
+        if (! is_dir($logFile)) {
+            mkdir($directory, 0755, true);
+        }
+
         $server->set([
             'worker_num' => $workerNum,
             'daemonize' => $this->config['daemonize'],
-            'log_file' => $this->config['log_file'],
+            //'log_file' => $this->config['log_file'],
+            'log_file' => $logFile,
         ]);
 
         $server->on('start', function ($server) {
-            file_put_contents($this->config['pid_file'], $server->master_pid);
+            //file_put_contents($this->config['pid_file'], $server->master_pid);
+            $pidFile = $this->config['pid_file'];
+            $directory = dirname($pidFile);
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            file_put_contents($pidFile, $server->master_pid);
+
+            $this->app->make('log')->info(
+                "Coiote Turbo server started successfully at http://{$this->config['host']}:{$this->config['port']}"
+            );
         });
 
         $server->on('request', function (SwooleRequest $req, SwooleResponse $res) {

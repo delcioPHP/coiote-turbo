@@ -1,6 +1,7 @@
 <?php
 namespace Cabanga\CoioteTurbo;
 
+use Cabanga\CoioteTurbo\Commands\CheckIdealServerCommand;
 use Cabanga\CoioteTurbo\Commands\StartCommand;
 use Cabanga\CoioteTurbo\Commands\StatusCommand;
 use Cabanga\CoioteTurbo\Commands\StopCommand;
@@ -21,6 +22,7 @@ class CoioteTurboServiceProvider extends ServiceProvider
                 StartCommand::class,
                 StopCommand::class,
                 StatusCommand::class,
+                CheckIdealServerCommand::class
             ]);
         }
     }

@@ -32,7 +32,7 @@ return [
     | modes: auto, 1, 2, 3, 4...
     |
     */
-    'workers' => env('COIOTE_WORKERS', 'auto'),
+    'workers' => env('COIOTE_WORKERS', '2'),
 
     /*
     |--------------------------------------------------------------------------

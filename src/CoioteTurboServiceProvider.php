@@ -5,6 +5,7 @@ use Cabanga\CoioteTurbo\Commands\CheckIdealServerCommand;
 use Cabanga\CoioteTurbo\Commands\StartCommand;
 use Cabanga\CoioteTurbo\Commands\StatusCommand;
 use Cabanga\CoioteTurbo\Commands\StopCommand;
+use Cabanga\CoioteTurbo\Commands\WorkCommand;
 use Illuminate\Support\ServiceProvider;
 
 class CoioteTurboServiceProvider extends ServiceProvider
@@ -22,7 +23,8 @@ class CoioteTurboServiceProvider extends ServiceProvider
                 StartCommand::class,
                 StopCommand::class,
                 StatusCommand::class,
-                CheckIdealServerCommand::class
+                CheckIdealServerCommand::class,
+                WorkCommand::class
             ]);
         }
     }

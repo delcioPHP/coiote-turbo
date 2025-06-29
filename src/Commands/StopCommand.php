@@ -18,7 +18,7 @@ class StopCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Stops the TurboEngine server';
+    protected $description = 'Stops the Coiote Turbo server';
 
     /**
      * Executes the command logic.

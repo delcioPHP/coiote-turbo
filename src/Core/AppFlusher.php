@@ -16,7 +16,7 @@ class AppFlusher
     public static function flush(Application $app): void
     {
         // Get the list of services to flush from the configuration file.
-        $servicesToFlush = $app['config']->get('coioteturbo.flush', []);
+        $servicesToFlush = $app['config']->get('coioteTurbo.flush', []);
 
         foreach ($servicesToFlush as $service) {
             try {

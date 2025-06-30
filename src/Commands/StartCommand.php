@@ -49,7 +49,6 @@ class StartCommand extends Command
         }
 
         // Instantiate and start the server.
-        // The SwooleServer class will now receive the correct log_file path.
         $server = new SwooleServer($this->laravel, $config);
 
         // This call will either block (foreground) or exit after forking (daemon).

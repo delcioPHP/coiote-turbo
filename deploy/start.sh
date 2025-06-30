@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# Configure Coiote Turbo if not already configured
+COIOTE_CONFIG="/var/www/config/coioteTurbo.php"
+
+if [ ! -f "$COIOTE_CONFIG" ]; then
+    echo "Configuring Coiote Turbo..."
+    php artisan vendor:publish --provider="Cabanga\CoioteTurbo\CoioteTurboServiceProvider" --tag="config"
+
+    if [ $? -eq 0 ]; then
+        echo "Coiote Turbo configured successfully."
+    else
+        echo "Failed to configure Coiote Turbo."
+        exit 1
+    fi
+else
+    echo "Coiote Turbo already configured."
+fi
+
 CONF_FILE="/var/www/deploy/server.conf"
 
 if [ ! -f "$CONF_FILE" ]; then
@@ -13,16 +30,20 @@ declare -A COMMANDS
 
 # Parse config file lines as key=value
 while IFS='=' read -r key value || [ -n "$key" ]; do
-    key=$(echo "$key" | sed 's/#.*//' | xargs)
-    value=$(echo "$value" | xargs)
+    # Remove comments and trim all whitespace (including invisible chars)
+    key=$(echo "$key" | sed 's/#.*//' | tr -d '[:space:]')
+    value=$(echo "$value" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
 
-    # Skip empty or invalid lines
-    if [[ -z "$key" || "$key" != command:* ]]; then
+    # Skip empty lines
+    if [[ -z "$key" ]]; then
         continue
     fi
 
-    COMMAND_KEY="${key#command:}"
-    COMMANDS[$COMMAND_KEY]="$value"
+    # Check if line starts with "command:"
+    if [[ "$key" =~ ^command:(.+)$ ]]; then
+        COMMAND_KEY="${BASH_REMATCH[1]}"
+        COMMANDS[$COMMAND_KEY]="$value"
+    fi
 done < "$CONF_FILE"
 
 # Execute non-blocking commands (e.g., queue, schedule) in background

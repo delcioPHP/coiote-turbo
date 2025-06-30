@@ -15,7 +15,7 @@ class SwooleServer
 {
     /**
      * The Laravel application instance.
-     * @var \Illuminate\Contracts\Foundation\Application
+     * @var Application
      */
     protected Application $app;
 
@@ -33,7 +33,7 @@ class SwooleServer
 
     /**
      * The pre-warmed kernel instance for the current worker.
-     * @var \Illuminate\Contracts\Http\Kernel|null
+     * @var HttpKernel|null
      */
     protected ?HttpKernel $kernel = null;
 
@@ -209,7 +209,7 @@ class SwooleServer
     /**
      * Gets the pre-warmed kernel for the current worker.
      * Implements a fallback to a pool if the pre-warmed instance is not available.
-     * @return \Illuminate\Contracts\Http\Kernel
+     * @return HttpKernel
      */
     protected function getKernel(): HttpKernel
     {

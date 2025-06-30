@@ -17,7 +17,7 @@ class CoioteTurboServiceProvider extends ServiceProvider
             __DIR__.'/../config/coioteTurbo.php' => config_path('coioteTurbo.php'),
         ], 'config');
 
-        // Register the commands so Artisan can find them
+        // Register the commands
         if ($this->app->runningInConsole()) {
             $this->commands([
                 StartCommand::class,

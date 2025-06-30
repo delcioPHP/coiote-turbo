@@ -56,7 +56,8 @@ return [
     // The maximum time (in seconds) a worker will wait for a response from a backend.
     'max_wait_time' => env('COIOTE_MAX_WAIT_TIME', 5),
 
-    // Allows all workers to listen on the same port, improving scaling on multi-core systems.
+    // Allows all workers to listen on the same port, improving scaling on multi-core
+    // systems.
     'enable_reuse_port' => env('COIOTE_REUSE_PORT', true),
 
     // Enables asynchronous, non-blocking reloads of workers.
@@ -155,6 +156,31 @@ return [
     'check_external_services' => env('COIOTE_CHECK_EXTERNAL', false),
     'external_services' => [
         // 'my_api' => 'https://api.example.com/health',
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scheduler Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the built-in scheduler runner.
+    |
+    */
+    'scheduler' => [
+        // Set to true to enable the 'coiote:schedule' command.
+        'enabled' => env('COIOTE_SCHEDULER_ENABLED', true),
+
+        'log' => [
+            // Set to true to enable logging for the scheduler.
+            'enabled' => env('COIOTE_SCHEDULER_LOG_ENABLED', true),
+
+            // The path for the scheduler's dedicated log file.
+            'path' => storage_path('logs/scheduler-coiote.log'),
+
+            // Minimum log level (e.g., 'debug', 'info', 'warning', 'error').
+            'level' => env('COIOTE_SCHEDULER_LOG_LEVEL', 'info'),
+        ],
     ],
 
 

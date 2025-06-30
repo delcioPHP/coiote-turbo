@@ -122,7 +122,7 @@ class WorkerLoop
 
     /**
      * Gather the options for the Illuminate\Queue\Worker.
-     * @return \Illuminate\Queue\WorkerOptions
+     * @return WorkerOptions
      */
     protected function gatherWorkerOptions(): WorkerOptions
     {

@@ -4,7 +4,7 @@ namespace Cabanga\CoioteTurbo\Scheduler;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Log;
+use Swoole\Process;
 use Swoole\Timer;
 use Throwable;
 
@@ -12,24 +12,59 @@ class SchedulerLoop
 {
     /**
      * The Laravel application instance.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
+     * @var Application
      */
     protected Application $app;
 
     /**
-     * A flag to stop the loop gracefully.
-     *
-     * @var bool
+     * Scheduler-specific configuration.
+     * @var array
      */
-    protected bool $shouldStop = false;
+    protected array $config;
 
-    /**
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     */
-    public function __construct(Application $app)
+    public function __construct(Application $app, array $config)
     {
         $this->app = $app;
+        $this->config = $config;
+    }
+
+    /**
+     * Writes a message to the configured log file directly.
+     * This method avoids using Laravel's logging system to prevent issues in forked processes.
+     *
+     * @param string $level   The log level (e.g., 'INFO', 'ERROR').
+     * @param string $message The log message.
+     * @param array  $context Additional context to be JSON encoded.
+     */
+    protected function log(string $level, string $message, array $context = []): void
+    {
+        // Only log if it's enabled in the configuration.
+        if (!($this->config['log']['enabled'] ?? false)) {
+            return;
+        }
+
+        $logPath = $this->config['log']['path'] ?? null;
+        if (empty($logPath)) {
+            return; // Do not log if path is not defined.
+        }
+
+        $directory = dirname($logPath);
+        if (!@is_dir($directory)) {
+            @mkdir($directory, 0755, true);
+        }
+
+        $timestamp = date('Y-m-d H:i:s');
+        $formattedContext = empty($context) ? '' : json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $formattedMessage = sprintf(
+            "[%s] scheduler.%s: %s %s" . PHP_EOL,
+            $timestamp,
+            strtoupper($level),
+            $message,
+            $formattedContext
+        );
+
+        // Append the message to the file with an exclusive lock to prevent corrupted writes.
+        @file_put_contents($logPath, $formattedMessage, FILE_APPEND | LOCK_EX);
     }
 
     /**
@@ -37,17 +72,19 @@ class SchedulerLoop
      */
     public function run(): void
     {
-        // Register signal handlers for graceful shutdown.
-        $this->registerSignalHandlers();
-
-        // Tick every 60 seconds (60000 ms) to run the scheduler.
-        Timer::tick(60000, function () {
-            if ($this->shouldStop) {
-                Timer::clearAll();
-                return;
-            }
-            $this->runDueTasks();
+        // Use Swoole's signal handler for proper integration with the event loop.
+        Process::signal(SIGINT, function () {
+            $this->log('info', 'Shutdown signal received, stopping scheduler timer...');
+            Timer::clearAll();
         });
+        Process::signal(SIGTERM, function () {
+            $this->log('info', 'Shutdown signal received, stopping scheduler timer...');
+            Timer::clearAll();
+        });
+
+        // Tick every 60 seconds to run the scheduler.
+        // The process will keep running as long as there are active timers.
+        Timer::tick(60000, fn () => $this->runDueTasks());
     }
 
     /**
@@ -56,51 +93,32 @@ class SchedulerLoop
     protected function runDueTasks(): void
     {
         try {
-            /** @var \Illuminate\Console\Scheduling\Schedule $schedule */
+            /** @var Schedule $schedule */
             $schedule = $this->app->make(Schedule::class);
 
-            // Find all events that are due to run now.
             $dueEvents = array_filter(
                 $schedule->events(),
                 fn ($event) => $event->isDue($this->app)
             );
 
             if (empty($dueEvents)) {
+                $this->log('debug', 'No scheduled tasks are due.');
                 return;
             }
 
-            Log::info('Scheduler: Found ' . count($dueEvents) . ' due tasks. Running...');
+            $this->log('info', 'Found ' . count($dueEvents) . ' due tasks. Running...');
 
-            // Run each due event.
             foreach ($dueEvents as $event) {
-                // We wrap each event in its own try-catch to prevent
-                // one failed job from stopping others.
                 try {
+                    $description = $event->description ?: 'Closure';
+                    $this->log('info', "Running task: {$description}");
                     $event->run($this->app);
                 } catch (Throwable $e) {
-                    Log::error(
-                        'Scheduler: A scheduled task failed.',
-                        ['exception' => $e]
-                    );
+                    $this->log('error', 'A scheduled task failed.', ['description' => $event->description, 'exception' => $e->getMessage()]);
                 }
             }
-
         } catch (Throwable $e) {
-            // Catch errors in the scheduler process itself.
-            Log::critical(
-                'Scheduler: The scheduler loop encountered a critical error.',
-                ['exception' => $e]
-            );
+            $this->log('critical', 'The scheduler loop encountered a critical error.', ['exception' => $e->getMessage()]);
         }
-    }
-
-    /**
-     * Register handlers for shutdown signals.
-     */
-    protected function registerSignalHandlers(): void
-    {
-        pcntl_async_signals(true);
-        pcntl_signal(SIGTERM, fn () => $this->shouldStop = true);
-        pcntl_signal(SIGINT, fn () => $this->shouldStop = true);
     }
 }

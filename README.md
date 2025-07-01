@@ -3,7 +3,7 @@
 <p>
     <a href="https://packagist.org/packages/cabanga/coiote-turbo"><img alt="Latest Stable Version" src="https://img.shields.io/packagist/v/cabanga/coiote-turbo.svg?style=for-the-badge"></a>
     <a href="https://packagist.org/packages/cabanga/coiote-turbo"><img alt="Total Downloads" src="https://img.shields.io/packagist/dt/cabanga/coiote-turbo.svg?style=for-the-badge"></a>
-    <a href="https://github.com//delcioPHP/coiote-turbo/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/packagist/l/cabanga/coiote-turbo.svg?style=for-the-badge"></a>
+    <a href="https://github.com/delcioPHP/coiote-turbo/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/packagist/l/cabanga/coiote-turbo.svg?style=for-the-badge"></a>
 </p>
 
 A fast, lightweight, and high-performance application server for Laravel, powered by Swoole. Coiote Turbo dramatically reduces latency and boosts your application's capacity by keeping the framework bootstrapped in memory.

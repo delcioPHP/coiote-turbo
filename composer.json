@@ -16,7 +16,9 @@
     },
     "authors": [
         {
-            "name": "Délcio Cabanga"
+            "name": "Délcio Cabanga",
+            "email": "dcbudapest@duck.com",
+            "role": "Software Arch"
         }
     ],
     "require": {

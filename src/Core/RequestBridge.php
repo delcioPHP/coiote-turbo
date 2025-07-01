@@ -10,8 +10,8 @@ class RequestBridge
 {
     /**
      * Converts a Swoole request to a Laravel request.
-     * @param \Swoole\Http\Request $swooleRequest
-     * @return \Illuminate\Http\Request
+     * @param SwooleRequest $swooleRequest
+     * @return LaravelRequest
      */
 //    public static function convert(SwooleRequest $swooleRequest): LaravelRequest
 //    {
@@ -62,8 +62,6 @@ class RequestBridge
         foreach ($swooleRequest->server ?? [] as $key => $value) {
             $server[strtoupper($key)] = $value;
         }
-
-        // Intelligently map headers to the server array. THIS IS A KEY FIX.
         // This logic correctly handles special CGI headers like Content-Type and Content-Length,
         // which solves the isJson() issue and improves overall compatibility.
         foreach ($swooleRequest->header ?? [] as $key => $value) {
@@ -99,8 +97,6 @@ class RequestBridge
                 // For PUT, PATCH, DELETE requests, data must be parsed from the raw body.
                 parse_str($swooleRequest->rawContent() ?? '', $data);
             }
-
-            // Use the correct InputBag class to avoid TypeErrors.
             $laravelRequest->request = new ParameterBag($data);
         }
 
@@ -123,7 +119,7 @@ class RequestBridge
                     $file['name'] ?? 'unknown',
                     $file['type'] ?? null,
                     $file['error'] ?? UPLOAD_ERR_OK,
-                    true // Mark as a test file, which prevents move_uploaded_file issues.
+                    true
                 );
             }
         }

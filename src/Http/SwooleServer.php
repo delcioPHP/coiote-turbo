@@ -92,11 +92,11 @@ class SwooleServer
             'open_tcp_nodelay' => $this->config['open_tcp_nodelay'] ?? true,
 
             // Buffer and Compression Settings
-//            'buffer_output_size' => $this->config['buffer_output_size'] ?? (2 * 1024 * 1024), // 2MB
-//            'socket_buffer_size' => $this->config['socket_buffer_size'] ?? (128 * 1024 * 1024), // 128MB
-//            'package_max_length' => $this->config['package_max_length'] ?? (8 * 1024 * 1024), // 8MB
-//            'http_compression' => $this->config['http_compression'] ?? true,
-//            'compression_level' => $this->config['compression_level'] ?? 1,
+            'buffer_output_size' => $this->config['buffer_output_size'] ?? (2 * 1024 * 1024), // 2MB
+            'socket_buffer_size' => $this->config['socket_buffer_size'] ?? (128 * 1024 * 1024), // 128MB
+            'package_max_length' => $this->config['package_max_length'] ?? (8 * 1024 * 1024), // 8MB
+            'http_compression' => $this->config['http_compression'] ?? true,
+            'compression_level' => $this->config['compression_level'] ?? 1,
 
             // Coroutine and Hooking Settings
             'enable_coroutine' => $this->config['enable_coroutine'] ?? true,

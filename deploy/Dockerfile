@@ -47,7 +47,7 @@ RUN apt-get update && \
         zip unzip && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# GD fix: configure with required libs
+
 RUN docker-php-ext-configure gd \
     --with-freetype \
     --with-jpeg \

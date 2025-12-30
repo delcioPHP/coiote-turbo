@@ -26,6 +26,12 @@ return [
     // Set to 'true' to run the server in the background (production mode).
     'daemonize' => env('COIOTE_DAEMONIZE', false),
 
+    // Log file for Swoole
+    'log_file' => storage_path('logs/coiote-turbo.log'),
+
+    // File to store the PID of the main process
+    'pid_file' => storage_path('framework/coiote/coiote-turbo.pid'),
+
     /*
     |--------------------------------------------------------------------------
     | Performance & Tuning

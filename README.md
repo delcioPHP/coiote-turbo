@@ -114,13 +114,6 @@ To start the main HTTP server and your application workers, run:
 php artisan coiote:start
 ```
 
-You can specify the number of application workers with the `--workers` option:
-
-```bash
-# Start the server
-php artisan coiote:start
-```
-
 #### Running Queue Workers
 
 To start the dedicated queue worker pool, run the `coiote:work` command. This will start a supervisor that manages multiple queue processes.
